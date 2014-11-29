@@ -3,7 +3,16 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Graph {
+/********************************
+ * Methods that main should use:
+ * void addEdge(vertex1, vertex2)
+ * int getVertexSize()
+ * int getEdgeSize()
+ * void printMatch(pattern1, pattern2)
+ * void printMatchingPath(pattern1, pattern2, length)
+ *******************************/
+public class Graph 
+{
 	private int edgeCount; //number of edges
 	private int vertexCount; //number of vertices
 	private List<List<String>> tree;
@@ -17,49 +26,84 @@ public class Graph {
 	}
 	
 	//Add edge between vertex1 and vertex2
-	public void addEdge(String vertex1, String vertex2){
-		boolean find = false;
-		if(tree.isEmpty()) //if the tree is empty, create a new array, set vertex1 as the first element for identification, and add the edge
+	public void addEdge(String vertex1, String vertex2)
+	{
+		//if the tree is empty, 
+		//create a new array with vertex1 as the first element for identification, and add the edge,
+		//create a new array with vertex2 as the identifier - the method is complete
+		if(tree.isEmpty()) 
 		{
 			tree.add(new ArrayList<String>());
 			tree.get(0).add(vertex1);
 			tree.get(0).add(vertex2);
-			vertexCount++;
+			edgeCount++;
+			tree.add(new ArrayList<String>());
+			tree.get(1).add(vertex2);
+			vertexCount += 2;
+			return;
 		}
 		else
 		{
-			for(int i = 0; i < tree.size(); i++) //search through arrays for vertex1 identification, if it is found and the array does not contain vertex2 edge - add the edge
+			//search through arrays for vertex1 identification, if it is found and the array does not contain vertex2 edge - add the edge
+			for(int i = 0; i < tree.size(); i++) 
 			{
 				if(tree.get(i).get(0) == vertex1)
 				{
-					if(tree.get(i).contains(vertex2)) //does edge already exist?
+					//if edge already exists, the method is complete
+					if(tree.get(i).contains(vertex2)) 
 						return;
+					//if not, add it, and check for existence of an array for vertex2
 					else
 					{
 						tree.get(i).add(vertex2);
-						find = true;
+						edgeCount++;
+						//search through arrays for vertex2 identification, if it is found - the method is complete
+						for(int j = 0; j < tree.size(); j++) 
+						{
+							if(tree.get(j).get(0) == vertex2)
+								return;	
+						}
+						//if vertex2 identifier was not found, create a new vertex array - the method is complete
+						tree.add(new ArrayList<String>());
+						tree.get(tree.size()-1).add(vertex2);
+						vertexCount++;
+						return;
 					}
 				}
 			}
-			if(!find) //if vertex array is not found, create it, set vertex1 as the first element for identification, and add the edge
+			//if vertex1 array is not found, create it, set vertex1 as the first element for identification, and add the edge
+			tree.add(new ArrayList<String>());
+			vertexCount++;
+			tree.get(tree.size()-1).add(vertex1);
+			tree.get(tree.size()-1).add(vertex2);
+			edgeCount++;
+			//search through arrays for vertex2 identification, if it is found - the method is complete
+			for(int j = 0; j < tree.size(); j++) 
 			{
-				tree.add(new ArrayList<String>());
-				tree.get(tree.size()-1).add(vertex1);
-				tree.get(tree.size()-1).add(vertex2);
-				vertexCount++;
+				if(tree.get(j).get(0) == vertex2)
+					return;	
 			}
-				
+			//if vertex2 identifier was not found, create a new vertex array
+			tree.add(new ArrayList<String>());
+			tree.get(tree.size()-1).add(vertex2);
+			vertexCount++;
+
 		}
-		edgeCount++;	
-		vertexCount++;
 	}
 	//Retrieves number of vertices
-	public int getSize(){
-		return edgeCount + vertexCount;
+	public int getVertexSize()
+	{
+		return vertexCount;
+	}
+	//Retrieves number of edges
+	public int getEdgeSize()
+	{
+		return edgeCount;
 	}
 	//Print all edges from vertex1 to vertex2 where vertex1 matches pattern1, 
 	//and vertex2 matches pattern2.
-	public void printMatch(String pattern1, String pattern2){ 
+	public void printMatch(String pattern1, String pattern2)
+	{ 
 		Pattern p1 = Pattern.compile(".*"+pattern1+".*");
 		Pattern p2 = Pattern.compile(".*"+pattern2+".*");
 		Matcher m1, m2;
@@ -90,7 +134,8 @@ public class Graph {
 	//that matches pattern1
 	//and vertex2 that matches pattern2. 
 	//Either print none found, or print the first matching path.
-	public void printMatchingPath(String pattern1, String pattern2, int length){
+	public void printMatchingPath(String pattern1, String pattern2, int length)
+	{
 		Pattern p1 = Pattern.compile(".*"+pattern1+".*");
 		Matcher m1;
 		boolean b1;
@@ -116,8 +161,8 @@ public class Graph {
 		if(path.equals("")) //if blank is returned - nothing was found
 			System.out.println("Path was not found");
 	}
-	
-	public String checkVertex(String path, String vertex, String pattern, int length)
+	//recursive function
+	private String checkVertex(String path, String vertex, String pattern, int length)
 	{
 		Pattern p = Pattern.compile(".*"+pattern+".*");
 		Matcher m;
@@ -163,23 +208,63 @@ public class Graph {
 	public static void main(String [] args)
 	{
 		Graph g = new Graph();
+		
 		//test addEdge from empty and getSize
 		g.addEdge("cat", "dog");
-		System.out.println("New Edge: cat => dog");
-		int size = g.getSize();
-		System.out.println("Graph size is: " + size + "\n");
+		System.out.println("First Edge: cat => dog");
+	    System.out.println("Correct vertex size: 2");
+		System.out.println("Vertex size is: " + g.getVertexSize());
+	    System.out.println("Correct edge size: 1");
+		System.out.println("Edge size is: " + g.getEdgeSize() + "\n");
 		
-		//test duplication validation
-		g.addEdge("cat", "dog");
-		System.out.println("New Edge: cat => dog");
-		size = g.getSize();
-		System.out.println("Graph size is: " + size + "\n");
-		
-		//test addition to size by 2
+		//test addition to vertex count by 1 and edge by 1
 		g.addEdge("cat", "mouse");
 		System.out.println("New Edge: cat => mouse");
-		size = g.getSize();
-		System.out.println("Graph size is: " + size + "\n");
+	    System.out.println("Correct vertex size: 3");
+		System.out.println("Vertex size is: " + g.getVertexSize());
+	    System.out.println("Correct edge size: 2");
+		System.out.println("Edge size is: " + g.getEdgeSize() + "\n");
+		
+		//test addition to vertex count by 3 and edge count by 2
+		g.addEdge("each", "bob");
+		g.addEdge("john", "bob");
+		System.out.println("Adding two edges with same vertex2");
+	    System.out.println("Correct vertex size: 6");
+	    System.out.println("Vertex size is: " + g.getVertexSize());
+	    System.out.println("Correct edge size: 4");
+		System.out.println("Edge size is: " + g.getEdgeSize() + "\n");
+		
+	    //test vertexCount
+		g.addEdge("cat", "dog");
+		g.addEdge("cat", "mouse");
+		g.addEdge("each", "bob");
+		g.addEdge("john", "bob");
+	    g.addEdge("a", "b");
+	    g.addEdge("b", "c"); //note duplicate addEdge
+	    g.addEdge("c", "a");
+	    g.addEdge("b", "c"); //note duplicate addEdge
+	    g.addEdge("c", "d");
+	    g.addEdge("a", "d");
+	    System.out.println("Correct vertex size: 10");
+	    System.out.println("Your answer: " + g.getVertexSize());
+	    
+	    //test edgeCount
+	    System.out.println("Correct edge size: 9");
+	    System.out.println("Your answer: " + g.getEdgeSize() + "\n");
+	    
+		//test multiple matches and addition to vertex size by 2 and edge size by 1
+		g.addEdge("calf", "donkey");
+		System.out.println("New Edge: calf => donkey");
+		System.out.println("Vertex size is: " + g.getVertexSize());
+		System.out.println("Looking for: ca and do");
+		g.printMatch("ca", "do");
+		System.out.println();
+	    
+	    //test path
+	    System.out.println("Correct answer: a => b => c => d");
+	    System.out.print("Your answer: ");
+	    g.printMatchingPath("a", "d", 3);
+	    System.out.println();
 		
 		//test successful printMatch
 		System.out.println("Looking for: ca and do");
@@ -191,21 +276,12 @@ public class Graph {
 		g.printMatch("co", "do");
 		System.out.println();
 		
-		//test multiple matches and addition to size by 3
-		g.addEdge("calf", "donkey");
-		System.out.println("New Edge: calf => donkey");
-		size = g.getSize();
-		System.out.println("Graph size is: " + size);
-		System.out.println("Looking for: ca and do");
-		g.printMatch("ca", "do");
-		System.out.println();
-		
 		//test path-finding (simple)
 		g.addEdge("john", "alex");
 	    g.addEdge("john", "each");
 	    g.addEdge("each", "knee");
 	    g.addEdge("each", "sun");
-	    System.out.println(g.tree.toString());
+	    //System.out.println(g.tree.toString());
 	    System.out.println("Looking for: john and sun in 2 steps");
 	    System.out.println("Correct answer: john => each => sun");
 	    System.out.print("Your answer: ");
@@ -220,7 +296,7 @@ public class Graph {
 	    g.addEdge("each", "sun");
 	    g.addEdge("dog", "john");
 	    g.addEdge("dog", "alex");
-	    System.out.println(g.tree.toString());
+	    //System.out.println(g.tree.toString());
 	    System.out.println("Looking for: cat and sun in 4 steps");
 	    System.out.println("Correct answer: cat => dog => john => each => sun");
 	    System.out.print("Your answer: ");
@@ -240,5 +316,6 @@ public class Graph {
 	    System.out.print("Your answer: ");
 	    g.printMatchingPath("cot", "sun", 4);
 	    System.out.println();
+	    
 	}
 }
