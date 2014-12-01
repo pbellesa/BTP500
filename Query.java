@@ -71,17 +71,15 @@ public class Query {
 
 		Scanner scanner = new Scanner(System.in);
 		boolean quit = false;
-		System.out.println("\n==== (Type 'help' for commands):");
-		System.out.print(">> ");
 		do{
-	
+			System.out.println("\n=== (Type 'help' for commands):");
+			System.out.print(">> ");
 			String option = scanner.next();
 			switch(option) {
 				case "size": {
-					System.out.println("\n|=======================================|\n");
+					System.out.println("~~~Size:");
 					System.out.println("Total # of Vertices: " + graph.getVertexSize());
 					System.out.println("Total # of Edges   : " + graph.getEdgeSize());
-					System.out.println("\n|=======================================|\n");
 					break;
 				}
 				case "goal":{
@@ -113,25 +111,22 @@ public class Query {
 					break;
 				}
 				case "help":{
-					System.out.println("size                         - Print size of graph.");
-					System.out.println("goal <pattern>               - Print matching goals.");
-					System.out.println("dep <string> <string>        - Print size of graph.");
+					System.out.println("size                  - Print size of graph.");
+					System.out.println("goal <pattern>        - Find matching goals.");
+					System.out.println("dep <string> <string> - Find matching dependencies.");
 					System.out.println("path <string> <string> <int> - Print path of given length.");
-					System.out.println("quit                         - Exit program.");
+                    System.out.println("quit                  - Exit program.");
+					
 				}
 				default:{
 					System.out.println("Try again.");
 					break;
 				}
 			}
-			System.out.println("\n==== (Type 'help' for commands):");
-			System.out.print(">> ");
+			
 		}while(!quit);
 		
 		scanner.close();
-		
-		
-		
 		
 	}
 	// ArrayReadCSV - Method to read CSV files into 
@@ -245,7 +240,7 @@ public class Query {
 	public static ArrayList<String> searchGoal(String pattern){
 		ArrayList<String> matches = new ArrayList<String>();
 		for(String match : goal){
-			if(match.matches("(?i)("+ pattern + ").*")){
+			if(match.matches("(?i).*("+ pattern + ").*")){
 				matches.add(match);
 			}
 		}
